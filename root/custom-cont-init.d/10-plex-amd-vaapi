@@ -3,9 +3,24 @@ set -euo pipefail
 
 driver="/opt/vaapi/dri/radeonsi_drv_video.so"
 plex_driver_cache="/config/Library/Application Support/Plex Media Server/Cache/va-dri-linux-x86_64"
+plex_driver_store="/config/Library/Application Support/Plex Media Server/Drivers"
 
 test -f "${driver}"
 mkdir -p "${plex_driver_cache}" /config/.cache
+
+# Plex rewrites its cache link before a real transcode so that it points to an
+# rsv driver stored under /config. Replace those persistent driver files too.
+# Plex will then keep its normal cache-management logic while loading our
+# musl-compatible Mesa driver.
+if [[ -d "${plex_driver_store}" ]]; then
+    while IFS= read -r -d '' plex_driver; do
+        ln -sfn "${driver}" "${plex_driver}"
+        chown -h abc:users "${plex_driver}"
+        echo "Replaced Plex driver target: ${plex_driver}"
+    done < <(find "${plex_driver_store}" \( -type f -o -type l \) \
+        -path '*/rsv-*-linux-x86_64/dri/radeonsi_drv_video.so' -print0)
+fi
+
 ln -sfn "${driver}" "${plex_driver_cache}/radeonsi_drv_video.so"
 chown -R abc:users /config/.cache
 chown -h abc:users "${plex_driver_cache}/radeonsi_drv_video.so"
