@@ -12,7 +12,7 @@ RUN apk add --no-cache \
       build-base bison flex curl tar xz \
       python3 py3-pip py3-mako py3-packaging \
       meson ninja pkgconf patchelf pax-utils \
-      expat-dev libdrm-dev libelf-dev libffi-dev \
+      expat-dev libdrm-dev elfutils-dev libffi-dev \
       libva-dev zlib-dev zstd-dev && \
     curl -fsSLo /tmp/mesa.tar.xz \
       "https://archive.mesa3d.org/mesa-${MESA_VERSION}.tar.xz" && \
@@ -63,4 +63,3 @@ COPY --from=mesa-builder /opt/vaapi /opt/vaapi
 
 ENV LIBVA_DRIVERS_PATH=/opt/vaapi/dri \
     LIBVA_DRIVER_NAME=radeonsi
-
