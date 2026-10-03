@@ -62,10 +62,9 @@ RUN set -eux; \
     test -f "$driver"; \
     mkdir -p /opt/vaapi/dri; \
     cp -aL "$driver" /opt/vaapi/dri/; \
-    lddtree -l "$driver" | while read -r library; do \
-      case "$library" in \
-        */ld-musl-*|*/libc.musl-*|"") continue ;; \
-      esac; \
+    for library in /usr/lib/*.so* /lib/*.so* /usr/local/lib/*.so*; do \
+      test -e "$library" || continue; \
+      case "$library" in */ld-musl-*|*/libc.musl-*) continue ;; esac; \
       cp -aL "$library" /opt/vaapi/; \
     done; \
     patchelf --set-rpath /opt/vaapi /opt/vaapi/dri/radeonsi_drv_video.so; \
