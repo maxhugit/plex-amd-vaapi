@@ -2,11 +2,13 @@
 
 ARG ALPINE_VERSION=3.15
 ARG MESA_VERSION=25.0.7
+ARG LIBDRM_VERSION=2.4.124
 
 # Plex Transcoder currently embeds musl 1.2.2. Alpine 3.15 uses the same
 # musl ABI, while Mesa 25 provides support for recent AMD GPUs (gfx11/gfx12).
 FROM alpine:${ALPINE_VERSION} AS mesa-builder
 ARG MESA_VERSION
+ARG LIBDRM_VERSION
 
 RUN apk add --no-cache \
       build-base bison flex curl tar xz \
@@ -15,11 +17,28 @@ RUN apk add --no-cache \
       expat-dev libdrm-dev elfutils-dev libffi-dev \
       libva-dev zlib-dev zstd-dev && \
     pip3 install --no-cache-dir 'meson>=1.3,<2' && \
+    curl -fsSLo /tmp/libdrm.tar.xz \
+      "https://dri.freedesktop.org/libdrm/libdrm-${LIBDRM_VERSION}.tar.xz" && \
+    mkdir /tmp/libdrm && \
+    tar -xJf /tmp/libdrm.tar.xz -C /tmp/libdrm --strip-components=1 && \
+    meson setup /tmp/libdrm/build /tmp/libdrm \
+      --prefix=/usr/local \
+      --buildtype=release \
+      -Dintel=disabled \
+      -Dradeon=disabled \
+      -Damdgpu=enabled \
+      -Dnouveau=disabled \
+      -Dvmwgfx=disabled \
+      -Dtests=false \
+      -Dudev=false \
+      -Dvalgrind=disabled \
+      -Dman-pages=disabled && \
+    ninja -C /tmp/libdrm/build install && \
     curl -fsSLo /tmp/mesa.tar.xz \
       "https://archive.mesa3d.org/mesa-${MESA_VERSION}.tar.xz" && \
     mkdir /tmp/mesa && \
     tar -xJf /tmp/mesa.tar.xz -C /tmp/mesa --strip-components=1 && \
-    meson setup /tmp/mesa/build /tmp/mesa \
+    PKG_CONFIG_PATH=/usr/local/lib/pkgconfig meson setup /tmp/mesa/build /tmp/mesa \
       --prefix=/usr/local \
       --buildtype=release \
       -Dplatforms=[] \
