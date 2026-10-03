@@ -10,7 +10,7 @@ ARG MESA_VERSION
 
 RUN apk add --no-cache \
       build-base bison flex curl tar xz \
-      python3 py3-pip py3-mako py3-packaging \
+      python3 py3-pip py3-mako py3-packaging py3-yaml \
       ninja pkgconf patchelf pax-utils \
       expat-dev libdrm-dev elfutils-dev libffi-dev \
       libva-dev zlib-dev zstd-dev && \
