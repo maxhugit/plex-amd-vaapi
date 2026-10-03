@@ -11,9 +11,10 @@ ARG MESA_VERSION
 RUN apk add --no-cache \
       build-base bison flex curl tar xz \
       python3 py3-pip py3-mako py3-packaging \
-      meson ninja pkgconf patchelf pax-utils \
+      ninja pkgconf patchelf pax-utils \
       expat-dev libdrm-dev elfutils-dev libffi-dev \
       libva-dev zlib-dev zstd-dev && \
+    pip3 install --no-cache-dir 'meson>=1.3,<2' && \
     curl -fsSLo /tmp/mesa.tar.xz \
       "https://archive.mesa3d.org/mesa-${MESA_VERSION}.tar.xz" && \
     mkdir /tmp/mesa && \
