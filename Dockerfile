@@ -38,6 +38,7 @@ RUN apk add --no-cache \
       "https://archive.mesa3d.org/mesa-${MESA_VERSION}.tar.xz" && \
     mkdir /tmp/mesa && \
     tar -xJf /tmp/mesa.tar.xz -C /tmp/mesa --strip-components=1 && \
+    sed -i '1428s/^if /if false and /' /tmp/mesa/meson.build && \
     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig meson setup /tmp/mesa/build /tmp/mesa \
       --prefix=/usr/local \
       --buildtype=release \
