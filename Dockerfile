@@ -38,7 +38,10 @@ RUN apk add --no-cache \
       "https://archive.mesa3d.org/mesa-${MESA_VERSION}.tar.xz" && \
     mkdir /tmp/mesa && \
     tar -xJf /tmp/mesa.tar.xz -C /tmp/mesa --strip-components=1 && \
-    sed -i '1428s/^if /if false and /' /tmp/mesa/meson.build && \
+    sed -i '/util_qsort_r(void/i #undef HAVE_GNU_QSORT_R' /tmp/mesa/src/util/u_qsort.h && \
+    sed -i '/util_qsort_r(void/i #undef HAVE_BSD_QSORT_R' /tmp/mesa/src/util/u_qsort.h && \
+    sed -i '/util_qsort_r(void/i #undef HAVE_QSORT_S' /tmp/mesa/src/util/u_qsort.h && \
+    sed -i '/util_qsort_r(void/i #define HAVE_QSORT_S 0' /tmp/mesa/src/util/u_qsort.h && \
     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig meson setup /tmp/mesa/build /tmp/mesa \
       --prefix=/usr/local \
       --buildtype=release \
