@@ -1,0 +1,13 @@
+#!/usr/bin/with-contenv bash
+set -euo pipefail
+
+driver="/opt/vaapi/dri/radeonsi_drv_video.so"
+plex_driver_cache="/config/Library/Application Support/Plex Media Server/Cache/va-dri-linux-x86_64"
+
+test -f "${driver}"
+mkdir -p "${plex_driver_cache}" /config/.cache
+ln -sfn "${driver}" "${plex_driver_cache}/radeonsi_drv_video.so"
+chown -R abc:users /config/.cache
+chown -h abc:users "${plex_driver_cache}/radeonsi_drv_video.so"
+
+echo "Plex AMD VAAPI driver linked into the Plex driver cache."

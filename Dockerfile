@@ -83,6 +83,8 @@ LABEL org.opencontainers.image.source="https://github.com/maxhugit/plex-amd-vaap
       org.opencontainers.image.licenses="MIT"
 
 COPY --from=mesa-builder /opt/vaapi /opt/vaapi
+COPY --chmod=755 root/custom-cont-init.d/10-plex-amd-vaapi /custom-cont-init.d/10-plex-amd-vaapi
 
 ENV LIBVA_DRIVERS_PATH=/opt/vaapi/dri \
-    LIBVA_DRIVER_NAME=radeonsi
+    LIBVA_DRIVER_NAME=radeonsi \
+    XDG_CACHE_HOME=/config/.cache
