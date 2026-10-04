@@ -6,7 +6,9 @@ on:
     tags: ['v*']
   workflow_dispatch:
   schedule:
-    - cron: '17 4 1 * *'
+    # Rebuild every Sunday so the image regularly inherits the latest
+    # LinuxServer Plex release without deploying it automatically on Unraid.
+    - cron: '17 4 * * 0'
 
 permissions:
   contents: read
@@ -48,9 +50,9 @@ jobs:
         with:
           context: .
           platforms: linux/amd64
+          pull: true
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
